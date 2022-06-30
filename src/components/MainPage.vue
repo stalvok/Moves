@@ -2,25 +2,50 @@
   <div class="container">
     <div class="row">
       <MyHeader/>
-      <input v-model="filmsSearch" type="text">
-      <button @click="nameSort">А-Я</button>
-      <button @click="ratingSort">rating</button>
-      <button>TEST</button>
-      <div class="display:flex">
-        <button
-            v-for="(filter,index) in filteredGenresArray"
-            :key="index"
-            @click="genreFilterButton(filter)"
-            :class="{ active: isActive}"
-        >
-          {{filter}}
-        </button>
-        <button
-            :class="{ active: isActive}"
-            @click="genreFilterButton('all')"
-        >
-          Все жанры
-        </button>
+      <div class="main-navigation">
+        <div class="navigation-search">
+          <input
+            v-model="filmsSearch"
+            type="text"
+            placeholder="Поиск по названию"
+          >
+          <img width="24px" height="24px" class="svg" src="../assets/search.svg"> </div>
+        <div class="navigation-filters">
+          <div>
+          <span
+              @click="nameSort"
+              class="main-button"
+          >
+            А-Я
+          </span>
+          <span
+                class="main-button"
+                @click="ratingSort"
+            >
+            Рейтинг
+          </span>
+          </div>
+          <div>
+            <span class="main-button"  @click="genresList =!genresList">Выбрать жанр</span>
+            <div v-show="genresList" class="genresList">
+              <div
+                  class="genresList-item"
+                  v-for="(filter,index) in filteredGenresArray"
+                  :key="index"
+                  @click="genreFilterButton(filter)"
+                  :id="index"
+              >
+                {{filter}}
+              </div>
+              <div
+                  class="genresList-item"
+                  @click="genreFilterButton('all')"
+              >
+                Все жанры
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div>
         <div class="card-list">
@@ -30,7 +55,7 @@
             class="card"
           >
             <router-link
-              :to="{name:'FilmCard', params: {id: card.filId}}"
+              :to="{name:'FilmCard', params: {id: card.filmId}}"
             >
               <div class="card-img">
                 <img :src="card.posterUrlPreview">
@@ -40,6 +65,7 @@
             <div class="card-rating">{{card.rating}}</div>
           </div>
         </div>
+        <div></div>
       </div>
     </div>
   </div>
@@ -47,19 +73,23 @@
 
 <script>
   import MyHeader from "@/components/MyHeader";
-  import films from "@/Mock/AllFilms";
+
   export default {
     name: 'MainPage',
     components: {MyHeader},
     data() {
       return {
-        AllFilms: films,
+        AllFilms: [],
         filmsSearch: '',
         currentGenre: 'all',
-        currentSort: 'nameRu',
-        isActive: true,
+        currentSort: 'rating',
+        genresList:false,
+        arrFilm:[],
+        apiURL:'https://kinopoiskapiunofficial.tech/api/v2.2/films/top',
       }
     },
+    props: [
+    ],
     computed: {
       computedFilms() {
         let result
@@ -97,41 +127,81 @@
     },
     methods: {
       genreFilterButton(filter) {
-        this.currentGenre = filter
-        this.isActive = !this.isActive
+         if (this.currentGenre === 'all') {
+           this.currentGenre = filter
+         }
+         else if (filter === this.currentGenre) {
+          this.currentGenre = 'all'
+         } else if (filter !== this.currentGenre) {
+          this.currentGenre = filter
+        }
       },
       ratingSort() {
         this.currentSort = 'rating'
       },
       nameSort() {
         this.currentSort = 'nameRu'
-      }
+      },
+    },
+    async mounted () {
+      let  response = await  fetch (this.apiURL, {
+        method: 'GET',
+        headers: {
+          'X-API-KEY': 'cb8f0126-a908-4e5c-a76d-71403d99bfbd',
+          'Content-Type': 'application/json',
+        },
+      })
+      let content = await response.json()
+      this.AllFilms = content.films
+      console.log(this.AllFilms)
+      console.log(content)
+
     },
   }
-  fetch ('https://kinopoiskapiunofficial.tech/api/v2.2/films/top', {
-    method: 'GET',
-    headers: {
-      'X-API-KEY': 'cb8f0126-a908-4e5c-a76d-71403d99bfbd',
-      'Content-Type': 'application/json',
-    },
-  })
-    .then(res => res.json())
-    .then(json => console.log(json))
-    .catch(err => console.log(err))
+
+
 </script>
 
 <style scoped>
-  .active {
-    border: 4px solid green;
-  }
   .container {
     display: flex;
     min-height: 100vh;
     justify-content: center;
-    background-color:rgb(17 24 39);
+    background-color:rgb(243 244 246) ;
   }
   .row {
     max-width: 1280px;
+    background-color:rgb(249 250 251);
+  }
+  .main-navigation {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 16px;
+  }
+  .navigation-search {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .navigation-search input {
+    height: 20px;
+    padding: 4px ;
+    border-radius: 4px;
+  }
+  .navigation-filters {
+    display: flex;
+    gap: 10px;
+
+  }
+  .main-button {
+    background-color:#FF6600;
+    border: 1px solid rgb(163 163 163);
+    padding: 8px;
+    margin: 0 4px;
+    border-radius: 4px;
+    cursor:pointer;
+    color: #ffffff;
+    font-weight: 700;
   }
   .card-list {
     display: grid;
@@ -144,7 +214,6 @@
   .card-list .card {
     position: relative;
     text-decoration: none;
-    color: white;
     font-size: 24px;
     display: flex;
     gap: 10px;
@@ -156,9 +225,9 @@
     object-fit: fill;
   }
   .card-img {
+    border: 1px solid black;
     width: 240px;
     height: 360px;
-    border:4px solid black;
   }
   .card-rating {
     position: absolute;
@@ -172,5 +241,26 @@
   }
   .card-name {
     margin-left: 12px;
+  }
+  .genresList {
+    display: flex;
+    margin: 20px 0 0 0;
+    border: 1px solid black;
+    flex-direction: column;
+    overflow-y: scroll;
+    color: #ffffff;
+    text-align: center;
+    max-height: 100px;
+    width: 200px  ;
+    background-color:#FF6600;
+  }
+  .genresList .genresList-item {
+    background-color:#FF6600;
+    font-size: 20px;
+    width: 100%;
+    cursor: pointer;
+  }
+  .genresList .genresList-item:hover {
+    background-color:#1F1F1F;
   }
 </style>

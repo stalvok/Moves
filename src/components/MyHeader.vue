@@ -1,5 +1,5 @@
 <template>
-  <div class="root">
+  <div class="row">
     <div class="container">
       <div class="header">
         <div
@@ -9,15 +9,6 @@
           Каталог Фильмов
         </div>
         <div>
-          <select multiple>
-            <option name="А-Я">А-Я</option>
-            <option name="rating">rating</option>
-          </select>
-          <select>
-            <option>Боевик</option>
-            <option>Комедия</option>
-            <option>Драмма</option>
-          </select>
         </div>
       </div>
     </div>
@@ -31,19 +22,20 @@
 </script>
 
 <style scoped>
-  .root {
+  .row {
     margin-bottom: 70px;
   }
   .container {
-    padding: 0 32px;
     background-color: rgb(17 24 39);
   }
   .header {
     display: flex;
+    border: 2px solid ;
     justify-content: space-between;
     align-items: center;
     padding: 0 24px;
-    background-color: rgb(17 24 39);
+    min-height: 100px;
+    background-color:#1F1F1F;
   }
   .header .header-title {
     color: white;
@@ -51,7 +43,6 @@
     font-size: 20px;
   }
   .header .header-title:hover {
-    color: red;
-    font-weight: 900;
+    color: orange;
   }
 </style>
