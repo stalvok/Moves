@@ -1,8 +1,7 @@
 import VueRouter from 'vue-router'
-import FilmCard from "@/components/FilmCard";
 import NotFound from "@/components/NotFound";
 import MainPage from "@/components/MainPage";
-
+import FilmPage from "@/components/FilmPage";
 export default  new VueRouter ({
   routes: [
     {
@@ -12,8 +11,8 @@ export default  new VueRouter ({
     },
     {
       path: '/film/:id',
-      component: FilmCard,
-      name: 'FilmCard'
+      component: FilmPage,
+      name: 'FilmPage'
     },
     {
       path: '*',

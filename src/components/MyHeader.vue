@@ -2,14 +2,12 @@
   <div class="row">
     <div class="container">
       <div class="header">
-        <div
+        <router-link
           class="header-title"
-          @click="$router.push({name: 'main'})"
+          :to="{name:'main'}"
         >
-          Каталог Фильмов
-        </div>
-        <div>
-        </div>
+          Discover your favorites
+        </router-link>
       </div>
     </div>
   </div>
@@ -30,17 +28,18 @@
   }
   .header {
     display: flex;
-    border: 2px solid ;
     justify-content: space-between;
     align-items: center;
-    padding: 0 24px;
-    min-height: 100px;
-    background-color:#1F1F1F;
+    padding:24px;
+    
+    background-color: rgb(249 250 251);
   }
   .header .header-title {
-    color: white;
+    color: #1F1F1F;
     cursor: pointer;
-    font-size: 20px;
+    font-weight: 700;
+    font-size: 24px;
+    text-decoration: none;
   }
   .header .header-title:hover {
     color: orange;

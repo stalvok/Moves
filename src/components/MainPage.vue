@@ -2,70 +2,78 @@
   <div class="container">
     <div class="row">
       <MyHeader/>
-      <div class="main-navigation">
+      <div class="navigation">
         <div class="navigation-search">
           <input
             v-model="filmsSearch"
             type="text"
             placeholder="Поиск по названию"
           >
-          <img width="24px" height="24px" class="svg" src="../assets/search.svg"> </div>
+          <img
+            width="24px"
+            height="24px"
+            class="svg"
+            src="../assets/search.svg"
+          >
+        </div>
         <div class="navigation-filters">
-          <div>
-          <span
-              @click="nameSort"
-              class="main-button"
+          <div
+            @click="nameSort"
+            class="button"
+            :class="{'active':currentSort === 'nameRu'}"
           >
             А-Я
-          </span>
-          <span
-                class="main-button"
-                @click="ratingSort"
-            >
-            Рейтинг
-          </span>
           </div>
-          <div>
-            <span class="main-button"  @click="genresList =!genresList">Выбрать жанр</span>
-            <div v-show="genresList" class="genresList">
-              <div
-                  class="genresList-item"
-                  v-for="(filter,index) in filteredGenresArray"
-                  :key="index"
-                  @click="genreFilterButton(filter)"
-                  :id="index"
-              >
-                {{filter}}
-              </div>
-              <div
-                  class="genresList-item"
-                  @click="genreFilterButton('all')"
-              >
-                Все жанры
-              </div>
-            </div>
+          <div
+            class="button"
+            @click="ratingSort"
+            :class="{'active':currentSort === 'rating'}"
+          >
+            Рейтинг
+          </div>
+          <div
+            class="button"
+            @click="genreFilterButton('all')"
+            :class="{'active':currentGenre === 'all'}"
+          >
+            Все жанры
           </div>
         </div>
       </div>
-      <div>
+      <div class="content">
         <div class="card-list">
           <div
             v-for="(card,index) in filteredFilms"
             :key="index"
             class="card"
           >
-            <router-link
-              :to="{name:'FilmCard', params: {id: card.filmId}}"
-            >
-              <div class="card-img">
-                <img :src="card.posterUrlPreview">
-              </div>
+            <router-link :to="{name:'FilmPage', params: {id: card.filmId}}">
+              <FilmCard  class="card" :card="card"/>
             </router-link>
-            <div class="card-name">{{card.nameRu}}</div>
-            <div class="card-rating">{{card.rating}}</div>
           </div>
         </div>
-        <div></div>
+        <div class="sidebar">
+          <div>
+            <div class="genresList">
+              <div
+                class="genresList-item"
+                @click="genresList =!genresList"
+              >
+                жанр
+              </div>
+              <div
+                class="genresList-item"
+                v-for="(filter,index) in filteredGenresArray"
+                :key="index"
+                :class="{'button':filter === currentGenre}"
+                @click="genreFilterButton(filter, index)"
+                :id="filter"
+              >
+                {{filter}}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -73,10 +81,11 @@
 
 <script>
   import MyHeader from "@/components/MyHeader";
+  import FilmCard from "@/components/FilmCard";
 
   export default {
     name: 'MainPage',
-    components: {MyHeader},
+    components: {MyHeader,FilmCard},
     data() {
       return {
         AllFilms: [],
@@ -88,8 +97,6 @@
         apiURL:'https://kinopoiskapiunofficial.tech/api/v2.2/films/top',
       }
     },
-    props: [
-    ],
     computed: {
       computedFilms() {
         let result
@@ -104,7 +111,6 @@
         if (this.currentSort === 'rating' ) {
           result.sort((a,b) =>  b[this.currentSort] - a[this.currentSort]  )
         }
-
         return result
       },
       filteredFilms1() {
@@ -126,7 +132,7 @@
       },
     },
     methods: {
-      genreFilterButton(filter) {
+      genreFilterButton(filter,) {
          if (this.currentGenre === 'all') {
            this.currentGenre = filter
          }
@@ -144,7 +150,7 @@
       },
     },
     async mounted () {
-      let  response = await  fetch (this.apiURL, {
+      let  response = await fetch (this.apiURL, {
         method: 'GET',
         headers: {
           'X-API-KEY': 'cb8f0126-a908-4e5c-a76d-71403d99bfbd',
@@ -155,13 +161,9 @@
       this.AllFilms = content.films
       console.log(this.AllFilms)
       console.log(content)
-
     },
   }
-
-
 </script>
-
 <style scoped>
   .container {
     display: flex;
@@ -171,61 +173,76 @@
   }
   .row {
     max-width: 1280px;
+    padding: 0 18px;
     background-color:rgb(249 250 251);
   }
-  .main-navigation {
+  .button {
+    background-color:#FA6808;
+    padding: 8px;
+    margin: 0 4px;
+    border-radius: 10px;
+    cursor:pointer;
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 0 10px rgba(0,0,0,0.4)
+  }
+  .button.active {
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, .5);
+   }
+
+  .navigation {
     display: flex;
     justify-content: space-between;
-    padding: 12px 16px;
+    padding: 12px 0;
   }
-  .navigation-search {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
+  .navigation-search  {
+    position: relative;
+  }
+  .navigation-search img {
+    position: absolute;
+    top: 25%;
+    right: 5%;
   }
   .navigation-search input {
     height: 20px;
-    padding: 4px ;
-    border-radius: 4px;
+    padding: 16px 24px;
+    background-color: #F0F4F7;
+    font-family: sans-serif;
+    border-radius: 8px;
+    border: none;
   }
   .navigation-filters {
     display: flex;
     gap: 10px;
-
+    align-items: center;
   }
-  .main-button {
-    background-color:#FF6600;
-    border: 1px solid rgb(163 163 163);
-    padding: 8px;
-    margin: 0 4px;
-    border-radius: 4px;
-    cursor:pointer;
-    color: #ffffff;
-    font-weight: 700;
+  .content {
+    display: flex;
   }
   .card-list {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: repeat(3,minmax(200px,250px));
     width: 100%;
-    gap: 20px;
-    padding: 20px;
-    justify-content: space-around;
+    gap: 32px;
+    justify-items: start;
   }
   .card-list .card {
-    position: relative;
     text-decoration: none;
     font-size: 24px;
     display: flex;
     gap: 10px;
     flex-direction: column;
+    text-align: center;
   }
   .card img {
+    border-radius: 30px;
     height: 100%;
     width: 100%;
     object-fit: fill;
+    box-shadow: 0 0 10px rgba(0,0,0,0.4)
   }
   .card-img {
-    border: 1px solid black;
+    position: relative;
     width: 240px;
     height: 360px;
   }
@@ -233,34 +250,57 @@
     position: absolute;
     top: 0;
     left: 0;
-    margin-top: 8px;
-    margin-left: 8px;
-    padding: 10px;
-    border-radius: 100%;
-    background-color: rgb(245 158 11);
+    transform: translate();
+    font-size: 16px;
+    margin: 24px 0 0 24px;
+    font-weight: 700;
+    color: #ffffff;
+  }
+  .card-rating > span {
+    font-weight: 400;
+    font-size: 18px;
   }
   .card-name {
-    margin-left: 12px;
+    padding: 10px 0;
+    font-size: 16px;
+    font-weight: 700;
   }
   .genresList {
     display: flex;
     margin: 20px 0 0 0;
-    border: 1px solid black;
+    gap: 4px;
+    font-size: 18px;
     flex-direction: column;
-    overflow-y: scroll;
-    color: #ffffff;
-    text-align: center;
-    max-height: 100px;
-    width: 200px  ;
-    background-color:#FF6600;
+    color: #AFAEAE;
   }
   .genresList .genresList-item {
-    background-color:#FF6600;
-    font-size: 20px;
-    width: 100%;
-    cursor: pointer;
+    font-weight: 500;
+    padding: 8px;
+    cursor:pointer;
+    border-radius: 10px;
   }
-  .genresList .genresList-item:hover {
-    background-color:#1F1F1F;
+  .genresList .genresList-item:first-letter {
+    text-transform: uppercase
+  }
+  .genresList .genresList-item:first-child {
+    font-size: 22px;
+    color:#1F1F1F;
+    font-weight: 700;
+  }
+  .genresList .genresList-item:hover:not(:first-child) {
+    background-color:#FA6808;
+    font-weight: 700;
+    color: #ffffff;
+  }
+  .sidebar {
+    display: flex;
+    padding: 16px;
+    flex-direction: column;
+    width: 180px;
+  }
+  @media(max-width: 900px) {
+    .card-list {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 </style>
