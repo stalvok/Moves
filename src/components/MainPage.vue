@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="row">
-      <MyHeader/>
+      <MyHeader />
       <div class="navigation">
         <div class="navigation-search">
           <input

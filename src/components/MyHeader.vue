@@ -32,10 +32,10 @@
     align-items: center;
     padding:24px;
     
-    background-color: rgb(249 250 251);
+    background-color: black;
   }
   .header .header-title {
-    color: #1F1F1F;
+    color: #ffffff;
     cursor: pointer;
     font-weight: 700;
     font-size: 24px;
