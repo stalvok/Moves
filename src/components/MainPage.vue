@@ -1,7 +1,7 @@
 <template>
   <div class="container">
+    <MyHeader />
     <div class="row">
-      <MyHeader />
       <div class="navigation">
         <div class="navigation-search">
           <input
@@ -167,14 +167,16 @@
 <style scoped>
   .container {
     display: flex;
+    flex-direction: column;
     min-height: 100vh;
+    margin: auto;
+    gap: 72px;
     justify-content: center;
-    background-color:rgb(243 244 246) ;
+    background-color:rgb(249 250 251) ;
+    max-width: 1280px;
   }
   .row {
-    max-width: 1280px;
     padding: 0 18px;
-    background-color:rgb(249 250 251);
   }
   .button {
     background-color:#FA6808;
@@ -194,6 +196,7 @@
     display: flex;
     justify-content: space-between;
     padding: 12px 0;
+    margin-bottom: 32px;
   }
   .navigation-search  {
     position: relative;
@@ -221,6 +224,7 @@
   }
   .card-list {
     display: grid;
+    justify-content: center;
     grid-template-columns: repeat(3,minmax(200px,250px));
     width: 100%;
     gap: 32px;
@@ -250,7 +254,6 @@
     position: absolute;
     top: 0;
     left: 0;
-    transform: translate();
     font-size: 16px;
     margin: 24px 0 0 24px;
     font-weight: 700;

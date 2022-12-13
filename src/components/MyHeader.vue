@@ -1,6 +1,4 @@
 <template>
-  <div class="row">
-    <div class="container">
       <div class="header">
         <router-link
           class="header-title"
@@ -9,8 +7,6 @@
           Discover your favorites
         </router-link>
       </div>
-    </div>
-  </div>
 </template>
 
 <script>
